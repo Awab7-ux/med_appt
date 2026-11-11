@@ -1,0 +1,14 @@
+
+> stayhealthy@1.0.0 build
+> vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.06 kB │ gzip:  0.48 kB
+dist/assets/index-C9r-RBS0.css   17.78 kB │ gzip:  5.10 kB
+dist/assets/index-Cbt8rT34.js   280.64 kB │ gzip: 87.20 kB
+
+✓ built in 272ms

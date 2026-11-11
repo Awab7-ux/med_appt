@@ -1,0 +1,2 @@
+$ curl -X POST http://localhost:8181/api/auth/login -H "Content-Type: application/json" -d '{"email":"awab@test.com","password":"Pass1234"}'
+{"authtoken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWY0NzYxMzgzNWRmNmY5MmYwYjVkODAiLCJpYXQiOjE3OTQ0MDU5MTUsImV4cCI6MTc5NTAxMDcxNX0.OVZG3TazOI49_bzBDtkiGjH2bc8x8uMC5Uz6p55KTRU","userName":"Awab","user":{"name":"Awab","email":"awab@test.com","phone":"0912345678","role":"Patient"}}
