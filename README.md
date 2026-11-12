@@ -1,4 +1,4 @@
-# StayHealthy
+# Medical Appointment Booking
 
 StayHealthy is a non-profit healthcare platform that helps patients in remote and underserved communities find doctors and request accessible medical appointments online.
 
