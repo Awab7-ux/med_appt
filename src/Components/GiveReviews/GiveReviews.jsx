@@ -1,8 +1,93 @@
 import { useState } from 'react';
 
-export default function GiveReviews() {
-  const [review, setReview] = useState(null);
-  const [rating, setRating] = useState('5');
-  const submit = (event) => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget).entries()); setReview(data); };
-  return <main className="page-shell narrow-page"><div className="section-heading"><p className="eyebrow">Your voice matters</p><h1>Share your experience</h1><p>Your feedback helps other patients feel confident finding care.</p></div>{review ? <article className="review-result" aria-live="polite"><div className="review-stars" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(Number(review.rating))}{'☆'.repeat(5 - Number(review.rating))}</div><h2>{review.name}</h2><p>“{review.review}”</p><span>Thank you for sharing your experience.</span></article> : <form className="surface-form" onSubmit={submit}><label htmlFor="review-name">Name</label><input id="review-name" name="name" autoComplete="name" required /><label htmlFor="review-text">Review</label><textarea id="review-text" name="review" rows="5" minLength="8" required /><label htmlFor="review-rating">Rating</label><select id="review-rating" name="rating" value={rating} onChange={(event) => setRating(event.target.value)}><option value="5">5 - Excellent</option><option value="4">4 - Very good</option><option value="3">3 - Good</option><option value="2">2 - Fair</option><option value="1">1 - Needs improvement</option></select><button className="button button-primary" type="submit">Submit review <span aria-hidden="true">↗</span></button></form>}</main>;
+function Popup({ trigger, open, onClose, children }) {
+  return (
+    <>
+      {trigger}
+      {open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+        >
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: 'min(420px, 92vw)' }}>
+            <button type="button" aria-label="Close" onClick={onClose} style={{ float: 'right' }}>×</button>
+            {children}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function GiveReviews({ reportId, onDone }) {
+  const [error, setError] = useState('');
+
+  const submit = (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.currentTarget).entries());
+    if (!data.name.trim() || !data.review.trim() || !data.rating) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    const review = { name: data.name.trim(), review: data.review.trim(), rating: data.rating };
+    localStorage.setItem(`review_${reportId}`, JSON.stringify(review));
+    onDone(review);
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <h3>Give Your Review</h3>
+      <label>Name<input name="name" required /></label>
+      <label>Review<textarea name="review" required /></label>
+      <label>Rating
+        <select name="rating" defaultValue="" required>
+          <option value="" disabled>Select rating</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+      {error && <p role="alert">{error}</p>}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default function GiveReviewsPopup({ reportId = 'default' }) {
+  const [open, setOpen] = useState(false);
+  const [saved, setSaved] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`review_${reportId}`));
+    } catch {
+      return null;
+    }
+  });
+
+  if (saved) {
+    return (
+      <div>
+        <button type="button" disabled>Review Given</button>
+        <p>{saved.name}: {saved.review} ({saved.rating}/5)</p>
+      </div>
+    );
+  }
+
+  return (
+    <Popup
+      open={open}
+      onClose={() => setOpen(false)}
+      trigger={<button type="button" onClick={() => setOpen(true)}>Give Review</button>}
+    >
+      <GiveReviews
+        reportId={reportId}
+        onDone={(review) => {
+          setSaved(review);
+          setOpen(false);
+        }}
+      />
+    </Popup>
+  );
 }
