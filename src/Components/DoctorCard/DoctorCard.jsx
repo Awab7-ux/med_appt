@@ -6,7 +6,11 @@ export default function DoctorCard({ doctor }) {
   const { appointments, saveAppointments } = useContext(AppContext);
   const [booking, setBooking] = useState(false);
   const appointment = appointments.find((item) => item.doctorId === doctor.id);
-  const cancel = () => saveAppointments(appointments.filter((item) => item.doctorId !== doctor.id));
+const cancel = () => {
+  const updated = appointments.filter((item) => item.doctorId !== doctor.id);
+  localStorage.setItem('appointments', JSON.stringify(updated));
+  saveAppointments(updated);
+};
   const addAppointment = (details) => {
     saveAppointments([...appointments.filter((item) => item.doctorId !== doctor.id), { ...details, doctorId: doctor.id, doctorName: doctor.name, speciality: doctor.speciality, id: `${doctor.id}-${Date.now()}` }]);
     setBooking(false);
